@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Info App</title>
+    <style>
+        /* body{
+            background-image: url(https://assets.nflxext.com/ffe/siteui/vlv3/8459cea4-79ab-4f27-9ef0-a7c92a30a9bb/6defa446-a465-465d-9975-d2ec35582ebe/IN-en-20220411-popsignuptwoweeks-perspective_alpha_website_medium.jpg);
+        } */
+        #container{
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            grid-template-rows: auto;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        #container>div{
+            text-align: center;
+            position: relative;
+            
+            box-sizing: border-box;
+            box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px, rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px, rgba(0, 0, 0, 0.07) 0px 16px 16px;
+        }
+        img{
+            width: 100%;
+            height: 400px;
+        }
+        #rec{
+            color: white;
+            position: absolute;
+            background-color: #3c07ff;
+            top: -10px;
+
+        }
+        *{
+            background-color: #0c111b;
+        }
+        *{
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            color: white;
+        }
+        #input{
+            color: black;
+            font-weight: bold;
+            width: 390px;
+            height: 40px;
+            border-radius: 50px;
+            border: none;
+            background-color: white;
+            font-size: 15px;
+            padding-left: 10px;
+        }
+        button{
+            font-size: 20px;
+            font-weight: bold;
+            width: 100px;
+            height: 40px;
+            border: none;
+            border-radius: 50px;
+            background-color: red;
+        }
+        button:hover{
+            color: #0c111b;
+            background-color: gold;
+            cursor: pointer;
+        }
+        h1{
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+        #containerabove{
+            margin: auto;
+            text-align: center;
+        }
+        #input:focus{
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Any Movie Here</h1>
+    <div id="containerabove">
+        <input id="input" type="text" placeholder="Enter movie name here">
+        <button onclick="movie()">Show</button>
+    </div>
+    <div id="container"></div>
+ </body>
+</html>
+
+<script>
+
+function movie(){
+
+   var find =  document.querySelector("#input").value
+
+    const url= `https://api.themoviedb.org/3/search/movie?api_key=8010ac67d442f68955d4d41cfb405e8f&language=en-US&page=1&include_adult=false&query=${find}`
+
+    fetch(url)
+    .then(function(res){
+        return res.json()
+    })
+    .then(function(res){
+        console.log(res)
+        var x = document.querySelector("#container").innerHTML=null;
+        if(res.total_results==0){
+            
+            var div = document.createElement('div');
+            var image = document.createElement('img');
+            image.src = 'https://media3.giphy.com/media/l1J9u3TZfpmeDLkD6/giphy.webp?cid=ecf05e47yai1cwkbwnq3njv3vkr2io71kqh0j0adk9g9fjl3&rid=giphy.webp&ct=g';
+        
+            var title = document.createElement('h2');
+            title.innerHTML = 'No Result Found';
+            div.append(image,title);
+            document.querySelector('#container').append(div);
+        }
+        else{
+            dallo(res)
+        }
+    }).catch(function(err){
+        console.log("err")
+        var div = document.createElement('div');
+        var image = document.createElement('img');
+        image.src = 'https://media3.giphy.com/media/l1J9u3TZfpmeDLkD6/giphy.webp?cid=ecf05e47yai1cwkbwnq3njv3vkr2io71kqh0j0adk9g9fjl3&rid=giphy.webp&ct=g';
+        
+        var title = document.createElement('h2');
+        title.innerHTML = 'No Result Found';
+        div.append(image,title);
+        document.querySelector('#container').append(div);
+    })
+
+    
+}
+
+function dallo(data){
+    var x = document.querySelector("#container").innerHTML=null;
+    data.results.map(function(elem){
+        
+        console.log(elem)
+        var div1 = document.createElement("div");
+        if(elem.poster_path==null){
+            delete div1;
+        }
+        var img = document.createElement("img");
+        if(elem.poster_path==null){
+            img.src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png"
+        }
+        else{
+            img.src = "https://image.tmdb.org/t/p/w500" + elem.poster_path;
+        }
+        
+        
+        console.log(img)
+
+        var title = document.createElement("h3");
+        title.innerText=`Movie : ${elem.title}`;
+
+        var r_d = document.createElement("h3");
+        r_d.innerText=`Release date : ${elem.release_date}`;
+
+        var rating = document.createElement("h3");
+        rating.innerText=`IMDB rating : ${elem.vote_average}`;
+
+        var rec = document.createElement("h3");
+        if(elem.length==0){
+            img.src = "https://media3.giphy.com/media/l1J9u3TZfpmeDLkD6/giphy.webp?cid=ecf05e47yai1cwkbwnq3njv3vkr2io71kqh0j0adk9g9fjl3&rid=giphy.webp&ct=g";
+            title.innerText='No Result Found';
+            
+        }
+        
+        if(elem.vote_average>8.5){
+            rec.innerText="Recommended";
+            rec.setAttribute("id","rec")
+            r_d.innerText=`Release date : ${elem.release_date}`;
+            rating.innerText=`IMDB rating : ${elem.vote_average}`;
+            div1.append(rec,img,title,r_d,rating)
+        }
+
+        if(elem.release_date==""){
+            
+            r_d.innerText=`Release date : Not available`;
+            
+            div1.append(r_d)
+        }
+
+        if(elem.vote_average==0){
+            
+            rating.innerText=`IMDB rating : Not available`;
+            
+            div1.append(rating)
+        }
+        
+        
+        div1.append(img,title,r_d,rating)
+        document.querySelector("#container").append(div1)
+    })
+
+
+
+}
+
+
+
+</script>
